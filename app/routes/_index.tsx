@@ -56,7 +56,7 @@ export default function Index() {
 const resources = [
   {
     href: "https://remix.run/start/quickstart",
-    text: "Quick Start (5 min)",
+    text: "Quick Start (5 min) hola",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
