@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useMatches } from "@remix-run/react";
-import type { User } from "./models/user.server";
+import {useMemo} from "react";
+import {useMatches} from "@remix-run/react";
+import type {User} from "./models/user.server";
 
 export function useMatchesData(id: string): any {
     const matchingRoutes = useMatches();
@@ -23,7 +23,6 @@ export function useOptionalUser() {
     }
     return data.user;
 }
-
 
 export function validateEmail(email: unknown): email is string {
     return typeof email === "string" && email.length > 3 && email.includes("@");
