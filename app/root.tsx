@@ -1,9 +1,10 @@
 import type {LinksFunction, LoaderFunctionArgs} from "@remix-run/node";
-import {json, redirect} from "@remix-run/node";
+import {json, MetaFunction, redirect} from "@remix-run/node";
 import {
     Form,
     Link,
     Links,
+    LiveReload,
     Meta,
     NavLink,
     Outlet,
@@ -13,10 +14,17 @@ import {
     useNavigation,
     useSubmit
 } from "@remix-run/react";
-// existing imports
 import appStylesHref from "./app.css?url";
 import {createEmptyContact, getContacts} from "./data";
 import {useEffect} from "react";
+import {getUser, sessionStorage} from "./session.server";
+
+import "./tailwind.css";
+import {useOptionalUser} from "~/utils";
+
+export const meta: MetaFunction = () => {
+    return [{title: "Doreancl TODO LIST"}];
+};
 
 export const links: LinksFunction = () => [
     {rel: "stylesheet", href: appStylesHref},
@@ -28,12 +36,37 @@ export const loader = async ({
     const url = new URL(request.url);
     const q = url.searchParams.get("q");
     const contacts = await getContacts(q);
-    return json({contacts, q});
+
+    const user = await getUser(request);
+
+    return json({contacts, q, user});
 };
 
-export const action = async () => {
-    const contact = await createEmptyContact();
-    return redirect(`/contacts/${contact.id}/edit`);
+export const action = async ({request}) => {
+
+    const formData = await request.formData();
+    const {_action, ...values} = Object.fromEntries(formData);
+
+    console.log("action", {_action, values})
+
+    if (_action == "create_new") {
+        const contact = await createEmptyContact();
+        return redirect(`/contacts/${contact.id}/edit`);
+    }
+
+    if (_action == "logout") {
+        const session = await sessionStorage.getSession(
+            request.headers.get("Cookie")
+        );
+        return redirect("/", {
+            headers: {
+                "Set-Cookie": await sessionStorage.destroySession(session),
+            },
+        });
+    }
+
+
+    return true;
 };
 
 export default function App() {
@@ -45,6 +78,7 @@ export default function App() {
         new URLSearchParams(navigation.location.search).has(
             "q"
         );
+    const user = useOptionalUser();
 
     useEffect(() => {
         const searchField = document.getElementById("q");
@@ -71,6 +105,22 @@ export default function App() {
                     Remix Contacts
                 </Link>
             </h1>
+            {
+                user ? (
+                    <h1>
+
+                        <Form method="post">
+                            <button
+                                type="submit"
+                                name="_action"
+                                aria-label="logout"
+                                value="logout"
+                            >logout</button>
+                        </Form>
+
+                    </h1>
+                ) : <div></div>
+            }
             <div>
                 <Form id="search-form" role="search"
                       onChange={(event) => {
@@ -97,7 +147,12 @@ export default function App() {
                     />
                 </Form>
                 <Form method="post">
-                    <button type="submit">New</button>
+                    <button
+                        type="submit"
+                        name="_action"
+                        aria-label="create new"
+                        value="create_new"
+                    >New</button>
                 </Form>
             </div>
             <nav>
@@ -116,7 +171,6 @@ export default function App() {
                                     }
                                     to={`contacts/${contact.id}`}
                                 >
-                                    <Link to={`contacts/${contact.id}`}>
                                         {contact.first || contact.last ? (
                                             <>
                                                 {contact.first} {contact.last}
@@ -127,9 +181,7 @@ export default function App() {
                                         {contact.favorite ? (
                                             <span>★</span>
                                         ) : null}
-                                    </Link>
                                 </NavLink>
-
                             </li>
                         ))}
                     </ul>
