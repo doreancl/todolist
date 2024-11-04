@@ -1,6 +1,5 @@
 import {createClient} from "@supabase/supabase-js";
 import invariant from "tiny-invariant";
-import {ContactRecord} from "~/data";
 
 type TaskMutation = {
     id?: number;
@@ -29,10 +28,6 @@ invariant(
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const tasksRepository = {
-    supabase: createClient(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_ANON_KEY!,
-    ),
     async getAll() {
 
         const {data, error} = await supabase
@@ -41,10 +36,6 @@ export const tasksRepository = {
             .order('id', {ascending: true});
 
         return {data, error};
-    },
-
-    async get(id: string): Promise<ContactRecord | null> {
-        throw new Error("Method get not implemented");
     },
 
     async create(values: TaskMutation) {
@@ -73,7 +64,11 @@ export const tasksRepository = {
         return response;
     },
 
-    destroy(id: string): null {
-        throw new Error("Method destroy not implemented");
+    async get(id: string): Promise<TaskRecord | null> {
+        throw new Error("Method 'get' is not implemented.");
+    },
+
+    async destroy(id: string): Promise<{ success: boolean }> {
+        throw new Error("Method 'destroy' is not implemented.");
     },
 };

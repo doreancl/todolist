@@ -32,12 +32,6 @@ export const action = async ({request}) => {
         console.debug({data, error})
     }
 
-    if (_action == "toggle_is_compasdasdlete") {
-        const {id} = values;
-        const {data, error} = await tasksRepository.set(id, values);
-        console.debug({data, error})
-    }
-
     if (_action === "toggle_is_complete") {
         const {id, is_complete} = values;
 
@@ -54,7 +48,6 @@ export const action = async ({request}) => {
 
 export default function _index() {
     const {tasks, q, user} = useLoaderData<typeof loader>();
-    const submit = useSubmit();
     const navigation = useNavigation();
 
     useEffect(() => {

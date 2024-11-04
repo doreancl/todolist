@@ -63,6 +63,9 @@ export default function App() {
                                 <Link to={`/todos`}>
                                     Todos
                                 </Link>
+                                <Link to={`/things`}>
+                                    Things
+                                </Link>
                                 <h1>
                                     <Form method="post">
                                         <button
