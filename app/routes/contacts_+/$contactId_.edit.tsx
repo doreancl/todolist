@@ -34,7 +34,7 @@ export default function EditContact() {
     return (
         <Form key={contact.id} id="contact-form" method="post">
             <p>
-                <span>Name</span>
+                <span>EDIT Name</span>
                 <input
                     aria-label="First name"
                     defaultValue={contact.first}
