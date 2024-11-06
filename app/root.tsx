@@ -60,6 +60,9 @@ export default function App() {
                     {
                         user ? (
                             <>
+                                <Link to={`/`}>
+                                    Home
+                                </Link>
                                 <Link to={`/todos`}>
                                     Todos
                                 </Link>

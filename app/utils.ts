@@ -27,3 +27,9 @@ export function useOptionalUser() {
 export function validateEmail(email: unknown): email is string {
     return typeof email === "string" && email.length > 3 && email.includes("@");
 }
+
+export function formString(formData: FormData) {
+    return Object.fromEntries(
+        Array.from(formData.entries()).map(([key, value]) => [key, String(value)])
+    ) as Record<string, string>;
+}
