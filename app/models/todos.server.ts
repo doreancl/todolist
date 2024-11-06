@@ -1,7 +1,7 @@
 import {createClient} from "@supabase/supabase-js";
 import invariant from "tiny-invariant";
 
-type TaskMutation = {
+export type TaskMutation = {
     id?: number;
     user_id: string;
     task: string;
@@ -40,7 +40,7 @@ export const tasksRepository = {
 
     async create(values: TaskMutation) {
 
-        console.log("create", values)
+        console.debug("create", values)
 
         const {data, error} = await supabase
             .from('todos')
@@ -53,7 +53,7 @@ export const tasksRepository = {
 
     async set(id: string, values: Partial<TaskMutation>) {
 
-        console.log("set", id, values)
+        console.debug("set", id, values)
 
         const response = await supabase
             .from('todos')
@@ -68,7 +68,14 @@ export const tasksRepository = {
         throw new Error("Method 'get' is not implemented.");
     },
 
-    async destroy(id: string): Promise<{ success: boolean }> {
-        throw new Error("Method 'destroy' is not implemented.");
+    async destroy(id: string) {
+        console.debug("destroy", {id})
+
+        const { data, error } = await supabase
+            .from('todos')
+            .delete()
+            .eq('id', id)
+
+        return {data, error};
     },
 };

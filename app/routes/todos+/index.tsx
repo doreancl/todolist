@@ -1,9 +1,10 @@
-import {Form, Outlet, useFetcher, useLoaderData, useNavigation, useSubmit} from "@remix-run/react";
-import {json, LoaderFunctionArgs} from "@remix-run/node";
-import {TaskRecord, tasksRepository} from "~/models/todos.server";
+import {Form, Outlet, useFetcher, useLoaderData, useNavigation} from "@remix-run/react";
+import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
+import {TaskMutation, TaskRecord, tasksRepository} from "~/models/todos.server";
 import {type FunctionComponent, useEffect} from "react";
 import {getUser, getUserId} from "~/session.server";
 import invariant from "tiny-invariant";
+import {formString} from "~/utils";
 
 export const loader = async ({
                                  request,
@@ -11,35 +12,47 @@ export const loader = async ({
     const url = new URL(request.url);
 
     const {data, error} = await tasksRepository.getAll();
+    if (error) {
+        console.error(error);
+    }
     const q = url.searchParams.get("q");
     const user = await getUser(request);
     invariant(user?.id, "Missing user");
     return json({tasks: data, q, user});
 };
 
-export const action = async ({request}) => {
+export const action = async ({request}: ActionFunctionArgs) => {
     const userId = await getUserId(request);
 
     const formData = await request.formData();
-    const {_action, ...values} = Object.fromEntries(formData);
+    const {_action, ...values} = formString(formData);
 
     values.user_id = userId;
 
-    console.debug("action", {_action, values})
+    console.debug("action", {_action, values}, Object.fromEntries(formData))
 
     if (_action == "create_new") {
-        const {data, error} = await tasksRepository.create(values);
+        const todolist: TaskMutation = {
+            is_complete: false, user_id: userId,
+            task: values.task
+        };
+
+        const {data, error} = await tasksRepository.create(todolist);
         console.debug({data, error})
     }
 
     if (_action === "toggle_is_complete") {
         const {id, is_complete} = values;
-
         const isCompleteBool = is_complete === 'true';
         const {data, error} = await tasksRepository.set(id, {
             is_complete: !isCompleteBool
         });
+        console.debug({data, error});
+    }
 
+    if (_action === "destroy") {
+        const {id} = values;
+        const {data, error} = await tasksRepository.destroy(id);
         console.debug({data, error});
     }
 
@@ -102,6 +115,30 @@ export default function _index() {
                                         <div>
                                             {task.task}
                                             <Favorite task={task}/>
+
+                                            <Form
+                                                method="post"
+                                                onSubmit={(event) => {
+                                                    const response = confirm(
+                                                        "Please confirm you want to delete this record."
+                                                    );
+                                                    if (!response) {
+                                                        event.preventDefault();
+                                                    }
+                                                }}
+                                            >
+                                                <input
+                                                    type="hidden"
+                                                    name="id"
+                                                    defaultValue={task.id}
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    name="_action"
+                                                    value="destroy"
+                                                >Delete
+                                                </button>
+                                            </Form>
                                         </div>
                                     </li>
                                 ))}
