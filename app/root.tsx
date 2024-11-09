@@ -54,8 +54,8 @@ export default function App() {
         </head>
         <body>
         <p>ROOT</p>
-        <div className="w-full h-full p-5 bg-yellow-100">
-            <div id="sidebar">
+        <div className="w-full h-full flex">
+            <div className="flex flex-col">
                 <>
                     {
                         user ? (
@@ -68,6 +68,9 @@ export default function App() {
                                 </Link>
                                 <Link to={`/things`}>
                                     Things
+                                </Link>
+                                <Link to={`/contacts`}>
+                                    Contacts
                                 </Link>
                                 <h1>
                                     <Form method="post">

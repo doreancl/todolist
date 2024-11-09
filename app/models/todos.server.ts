@@ -28,7 +28,7 @@ invariant(
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const tasksRepository = {
-    async getAll() {
+    async getAll(): Promise<TaskRecord[]> {
 
         const {data, error} = await supabase
             .from('todos')
@@ -38,7 +38,7 @@ export const tasksRepository = {
         return {data, error};
     },
 
-    async create(values: TaskMutation) {
+    async create(values: TaskMutation): Promise<TaskRecord> {
 
         console.debug("create", values)
 
@@ -51,7 +51,7 @@ export const tasksRepository = {
         return {data, error};
     },
 
-    async set(id: string, values: Partial<TaskMutation>) {
+    async set(id: string, values: Partial<TaskMutation>): Promise<TaskRecord> {
 
         console.debug("set", id, values)
 
@@ -64,14 +64,20 @@ export const tasksRepository = {
         return response;
     },
 
-    async get(id: string): Promise<TaskRecord | null> {
-        throw new Error("Method 'get' is not implemented.");
+    async get(id: string): Promise<TaskRecord> {
+        const {data, error} = await supabase
+            .from('todos')
+            .select('*')
+            .eq('id', id)
+            .single()
+        ;
+        return {data, error};
     },
 
-    async destroy(id: string) {
+    async destroy(id: string): Promise<void> {
         console.debug("destroy", {id})
 
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('todos')
             .delete()
             .eq('id', id)
