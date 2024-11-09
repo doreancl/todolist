@@ -33,7 +33,7 @@ export const action = async ({request}) => {
 };
 
 
-export default function _index() {
+export default function contacts() {
     const {contacts, q} = useLoaderData<typeof loader>();
     const submit = useSubmit();
 
@@ -57,7 +57,7 @@ export default function _index() {
         <>
             <div id="sidebar">
                 <h1>
-                    <Link to={`/`}>
+                    <Link to={`/public`}>
                         Remix Contacts
                     </Link>
                 </h1>

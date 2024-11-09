@@ -1,4 +1,4 @@
-import {Form, Outlet, useFetcher, useLoaderData, useNavigation} from "@remix-run/react";
+import {Form, NavLink, Outlet, useFetcher, useLoaderData, useNavigation} from "@remix-run/react";
 import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
 import {TaskMutation, TaskRecord, tasksRepository} from "~/models/todos.server";
 import {type FunctionComponent, useEffect} from "react";
@@ -59,7 +59,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     return true;
 };
 
-export default function _index() {
+export default function todos() {
     const {tasks, q, user} = useLoaderData<typeof loader>();
     const navigation = useNavigation();
 
@@ -80,39 +80,69 @@ export default function _index() {
 
     return (
         <>
-            <p>index 1</p>
-            <div className="w-full h-full p-5 bg-red-100">
-                <div id="sidebar" className="border-2 border-red-300">
-                    <div>
-                        <Form id="search-form" method="post">
-                            <input
-                                aria-label="Create a new TODO..."
-                                name="task"
-                                placeholder="task"
-                                type="text"
-                                minLength={4}
-                            />
-
-                            <div
-                                aria-hidden
-                                id="search-spinner"
-                                hidden={!searching}
-                            />
-                            <button
-                                type="submit"
-                                name="_action"
-                                aria-label="create new"
-                                value="create_new"
-                            >New
-                            </button>
-                        </Form>
+            <div className="
+                flex flex-row
+                w-full h-full p-5 bg-red-100
+            ">
+                <div className="
+                    flex flex-col
+                    h-full
+                    border-2 border-green-900
+                ">
+                    <div className="
+                    h-36 flex
+                    items-center justify-center
+                    border-2 border-black
+                ">
+                        <h1>{user.email}</h1>
                     </div>
-                    <nav>
+                    <div className="
+                    flex
+                    items-center justify-center
+                    pl-1 border-2 border-black
+                 ">
+                        <h1>My Tasks</h1>
+                    </div>
+                    <Form method="post" className="flex w-full justify-center p-2 border-2 border-black">
+                        <label htmlFor="task" className="sr-only">Task</label>
+                        <input
+                            id="task"
+                            aria-label="Create a new TODO..."
+                            name="task"
+                            placeholder="task"
+                            type="text"
+                            minLength={4}
+                            className=""
+                        />
+
+                        <div
+                            aria-hidden
+                            id="search-spinner"
+                            hidden={!searching}
+                        />
+                        <button
+                            type="submit"
+                            name="_action"
+                            aria-label="create new"
+                            value="create_new"
+                        >New
+                        </button>
+                    </Form>
+                    <nav className="flex w-full justify-center p-2 border-2 border-black">
                         {tasks && tasks.length ? (
-                            <ul>
+                            <ul className=" w-full">
                                 {tasks.map((task) => (
-                                    <li key={task.id}>
-                                        <div>
+                                    <li key={task.id} className="flex justify-between border-2 border-black w-auto">
+                                        <NavLink
+                                            className={({isActive, isPending}) =>
+                                                isActive
+                                                    ? "active"
+                                                    : isPending
+                                                        ? "pending"
+                                                        : ""
+                                            }
+                                            to={`${task.id}`}
+                                        >
                                             {task.task}
                                             <Favorite task={task}/>
 
@@ -139,7 +169,9 @@ export default function _index() {
                                                 >Delete
                                                 </button>
                                             </Form>
-                                        </div>
+                                        </NavLink>
+
+
                                     </li>
                                 ))}
                             </ul>
@@ -150,26 +182,26 @@ export default function _index() {
                         )}
                     </nav>
                 </div>
-
-                <div id="detail" className="border-2 border-red-300">
+                <aside className="
+                    w-52
+                    border-2 border-blue-900
+                ">
                     <div>Outlet</div>
                     <Outlet/>
-                </div>
+                </aside>
             </div>
         </>
     );
 }
 
-const Favorite: FunctionComponent<{
-    task: TaskRecord;
-}> = ({task}) => {
+const Favorite: FunctionComponent<{ task: TaskRecord; }> = ({task}) => {
 
     const fetcher = useFetcher();
 
     const is_complete = task.is_complete;
 
     return (
-        <fetcher.Form method="post">
+        <fetcher.Form method="post" className="w-1/4">
             <input
                 type="hidden"
                 name="id"
@@ -181,6 +213,7 @@ const Favorite: FunctionComponent<{
                 defaultValue={task.is_complete.toString()}
             />
             <button
+                className="w-full"
                 aria-label={
                     is_complete
                         ? "Remove from favorites"
