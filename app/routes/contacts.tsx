@@ -33,7 +33,7 @@ export const action = async ({request}) => {
 };
 
 
-export default function contacts() {
+export default function Contacts() {
     const {contacts, q} = useLoaderData<typeof loader>();
     const submit = useSubmit();
 

@@ -1,7 +1,8 @@
-import {Form, NavLink, Outlet, useFetcher, useLoaderData, useNavigation} from "@remix-run/react";
+import {Form, NavLink, Outlet, useActionData, useFetcher, useLoaderData, useNavigation} from "@remix-run/react";
 import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
 import {TaskMutation, TaskRecord, tasksRepository} from "~/models/todos.server";
-import {type FunctionComponent, useEffect} from "react";
+import * as React from "react";
+import {type FunctionComponent} from "react";
 import {getUser, getUserId} from "~/session.server";
 import invariant from "tiny-invariant";
 import {formString} from "~/utils";
@@ -56,18 +57,28 @@ export const action = async ({request}: ActionFunctionArgs) => {
         console.debug({data, error});
     }
 
-    return true;
+    return {success: true};
 };
 
-export default function todos() {
+export default function Todos() {
     const {tasks, q, user} = useLoaderData<typeof loader>();
     const navigation = useNavigation();
+    const actionData = useActionData();
+    const taskRef = React.useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
+        if (actionData?.success) {
+            if (taskRef?.current) {
+                (taskRef.current as HTMLInputElement).value = "";
+            }
+        }
+    }, [actionData]);
+
+    React.useEffect(() => {
         console.debug({user}, {tasks})
     }, [tasks, user]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const searchField = document.getElementById("q");
         if (searchField instanceof HTMLInputElement) {
             searchField.value = q || "";
@@ -113,6 +124,7 @@ export default function todos() {
                             type="text"
                             minLength={4}
                             className=""
+                            ref={taskRef}
                         />
 
                         <div
@@ -132,19 +144,27 @@ export default function todos() {
                         {tasks && tasks.length ? (
                             <ul className=" w-full">
                                 {tasks.map((task) => (
-                                    <li key={task.id} className="flex justify-between border-2 border-black w-auto">
-                                        <NavLink
-                                            className={({isActive, isPending}) =>
-                                                isActive
-                                                    ? "active"
-                                                    : isPending
-                                                        ? "pending"
-                                                        : ""
-                                            }
-                                            to={`${task.id}`}
-                                        >
-                                            {task.task}
+                                    <li key={task.id} className="border-2 border-black w-auto">
+
+
+                                        <div className="
+                                                flex flex-row justify-between
+                                            ">
                                             <Favorite task={task}/>
+
+                                            <NavLink
+                                                className={
+                                                    ({isActive, isPending}) =>
+                                                        isActive
+                                                            ? "active"
+                                                            : isPending
+                                                                ? "pending"
+                                                                : "ASS"
+                                                }
+                                                to={`${task.id}`}
+                                            >
+                                                <span>{task.task}</span>
+                                            </NavLink>
 
                                             <Form
                                                 method="post"
@@ -169,9 +189,8 @@ export default function todos() {
                                                 >Delete
                                                 </button>
                                             </Form>
-                                        </NavLink>
 
-
+                                        </div>
                                     </li>
                                 ))}
                             </ul>

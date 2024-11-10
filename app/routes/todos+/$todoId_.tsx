@@ -1,6 +1,5 @@
-import {ActionFunctionArgs, LoaderFunctionArgs, redirect, TypedResponse} from "@remix-run/node";
-import {json} from "@remix-run/node";
-import {Form, useFetcher, useLoaderData} from "@remix-run/react";
+import {ActionFunctionArgs, json, LoaderFunctionArgs, redirect, TypedResponse} from "@remix-run/node";
+import {Form, Link, useFetcher, useLoaderData} from "@remix-run/react";
 import invariant from "tiny-invariant";
 import {TaskRecord, tasksRepository} from "~/models/todos.server";
 import {getUserId} from "~/session.server";
@@ -10,9 +9,9 @@ import type {FunctionComponent} from "react";
 export const loader = async (
     {params,}: LoaderFunctionArgs
 ): Promise<TypedResponse<{ task: TaskRecord }>> => {
-    invariant(params.id, "Missing task id");
+    invariant(params.todoId, "Missing task id");
 
-    const {data, error} = await tasksRepository.get(params.id);
+    const {data, error} = await tasksRepository.get(params.todoId);
     if (error) {
         console.error(error);
         throw new Response("Not Found", {status: 404});
@@ -58,7 +57,6 @@ export const action = async (
         return redirect("/todos");
     }
 
-
     return true;
 };
 
@@ -66,61 +64,81 @@ export default function EditTodo() {
     const {task} = useLoaderData<typeof loader>();
 
     return (
-        <>
+        <div>
+            <Link
+                className=""
+                to={`/todos`}>
+                X
+            </Link>
 
-            <Form method="post" className="flex w-full justify-center p-2 border-2 border-black">
-                <label htmlFor="task" className="sr-only">Task</label>
-                <input
-                    id="task"
-                    aria-label="Create a new TODO..."
-                    name="task"
-                    placeholder="task"
-                    type="text"
-                    minLength={4}
-                    defaultValue={task.task}
-                    className=""
-                />
+            <div className="
+            flex flex-row
+            justify-between
+            ">
+                <Favorite task={task}/>
 
-                <input
-                    type="hidden"
-                    name="id"
-                    defaultValue={task.id}
-                />
-                <button
-                    type="submit"
-                    name="_action"
-                    aria-label="update"
-                    value="update"
-                >Save
-                </button>
-            </Form>
 
-            <Favorite task={task}/>
+                <Form
+                    method="post"
+                    onSubmit={(event) => {
+                        const response = confirm(
+                            "Please confirm you want to delete this record."
+                        );
+                        if (!response) {
+                            event.preventDefault();
+                        }
+                    }}
+                >
+                    <input
+                        type="hidden"
+                        name="id"
+                        defaultValue={task.id}
+                    />
+                    <button
+                        type="submit"
+                        name="_action"
+                        value="destroy"
+                    >Delete
+                    </button>
+                </Form>
+            </div>
+            <div className="
+            flex flex-row
+            ">
 
-            <Form
-                method="post"
-                onSubmit={(event) => {
-                    const response = confirm(
-                        "Please confirm you want to delete this record."
-                    );
-                    if (!response) {
-                        event.preventDefault();
-                    }
-                }}
-            >
-                <input
-                    type="hidden"
-                    name="id"
-                    defaultValue={task.id}
-                />
-                <button
-                    type="submit"
-                    name="_action"
-                    value="destroy"
-                >Delete
-                </button>
-            </Form>
-        </>
+                <Form method="post" className="
+            flex
+            flex-col
+            w-full justify-center p-2 border-2 border-black
+            ">
+                    <label htmlFor="task" className="sr-only">Task</label>
+                    <input
+                        id="task"
+                        aria-label="Task Description"
+                        name="task"
+                        placeholder="task"
+                        type="text"
+                        minLength={4}
+                        defaultValue={task.task}
+                        className=""
+                    />
+
+                    <input
+                        type="hidden"
+                        name="id"
+                        defaultValue={task.id}
+                    />
+                    <button
+                        className="mt-5"
+                        type="submit"
+                        name="_action"
+                        aria-label="update"
+                        value="update"
+                    >Save
+                    </button>
+                </Form>
+            </div>
+        </div>
     );
 }
 
