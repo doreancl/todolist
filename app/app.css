@@ -227,16 +227,16 @@ i {
     transition: background-color 100ms;
 }
 
-#sidebar nav a:hover {
+nav a:hover {
     background: #e3e3e3;
 }
 
-#sidebar nav a.active {
+nav a.active {
     background: hsl(224, 98%, 58%);
-    color: white;
+    color: red;
 }
 
-#sidebar nav a.pending {
+nav a.pending {
     animation: progress 2s infinite ease-in-out;
     animation-delay: 200ms;
 }
