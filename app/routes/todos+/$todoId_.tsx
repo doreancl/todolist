@@ -4,7 +4,8 @@ import invariant from "tiny-invariant";
 import {TaskRecord, tasksRepository} from "~/models/todos.server";
 import {getUserId} from "~/session.server";
 import {formString} from "~/utils";
-import type {FunctionComponent} from "react";
+import * as React from "react";
+import {FunctionComponent} from "react";
 
 export const loader = async (
     {params,}: LoaderFunctionArgs
@@ -111,17 +112,23 @@ export default function EditTodo() {
             flex-col
             w-full justify-center p-2 border-2 border-black
             ">
-                    <label htmlFor="task" className="sr-only">Task</label>
-                    <input
-                        id="task"
-                        aria-label="Task Description"
-                        name="task"
-                        placeholder="task"
-                        type="text"
-                        minLength={4}
-                        defaultValue={task.task}
-                        className=""
-                    />
+                    <div className="mb-5">
+                        <label htmlFor="taskTitle"
+                               className="mb-2.5 block font-medium text-black"
+                        >
+                            Task title
+                        </label>
+                        <input type="text" name="task" id="taskTitle"
+                               placeholder="Enter task title"
+                               className="
+                                   w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black
+                                   focus:border-primary focus-visible:outline-none
+                                   "
+                               minLength={4}
+                               defaultValue={task.task}
+
+                        />
+                    </div>
 
                     <input
                         type="hidden"
@@ -129,7 +136,10 @@ export default function EditTodo() {
                         defaultValue={task.id}
                     />
                     <button
-                        className="mt-5"
+                        className="
+                            flex items-center gap-2 rounded bg-primary py-2 px-4.5
+                                font-medium text-white hover:bg-opacity-90
+                        "
                         type="submit"
                         name="_action"
                         aria-label="update"

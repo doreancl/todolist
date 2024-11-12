@@ -2,15 +2,18 @@ import type {LinksFunction, LoaderFunctionArgs} from "@remix-run/node";
 import {json, MetaFunction, redirect} from "@remix-run/node";
 import {Form, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData} from "@remix-run/react";
 import {getUser, sessionStorage} from "./session.server";
-import appStylesHref from "./app.css?url";
-import "./tailwind.css";
+
+
+import "~/assets/styles/tailwind.css";
+import "~/assets/fonts/satoshi.css";
+
 
 export const meta: MetaFunction = () => {
     return [{title: "Doreancl TODO LIST"}];
 };
 
 export const links: LinksFunction = () => [
-    {rel: "stylesheet", href: appStylesHref},
+    //{rel: "stylesheet", href: appStylesHref},
 ];
 
 export async function loader({request}: LoaderFunctionArgs) {

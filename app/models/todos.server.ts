@@ -28,11 +28,12 @@ invariant(
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const tasksRepository = {
-    async getAll(): Promise<TaskRecord[]> {
+    async getAll(userId: string): Promise<TaskRecord[]> {
 
         const {data, error} = await supabase
             .from('todos')
             .select('*')
+            .eq('user_id', userId)
             .order('id', {ascending: true});
 
         return {data, error};
