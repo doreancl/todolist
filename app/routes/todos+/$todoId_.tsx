@@ -1,11 +1,11 @@
 import {ActionFunctionArgs, json, LoaderFunctionArgs, redirect, TypedResponse} from "@remix-run/node";
-import {Form, Link, useFetcher, useLoaderData} from "@remix-run/react";
+import {Form, Link, useLoaderData} from "@remix-run/react";
 import invariant from "tiny-invariant";
 import {TaskRecord, tasksRepository} from "~/models/todos.server";
 import {getUserId} from "~/session.server";
 import {formString} from "~/utils";
 import * as React from "react";
-import {FunctionComponent} from "react";
+import {IsComplete} from "~/routes/todos+/is_complete";
 
 export const loader = async (
     {params,}: LoaderFunctionArgs
@@ -45,9 +45,9 @@ export const action = async (
         const {id, is_complete} = values;
         const isCompleteBool = is_complete === 'true';
         const {data, error} = await tasksRepository.set(id, {
-            is_complete: !isCompleteBool
+            is_complete: isCompleteBool
         });
-        console.debug({data, error});
+        console.debug("toggle_is_complete", {data, error});
     }
 
     if (_action === "destroy") {
@@ -69,15 +69,14 @@ export default function EditTodo() {
             <Link
                 className=""
                 to={`/todos`}>
-                X
+                Close
             </Link>
 
             <div className="
             flex flex-row
             justify-between
             ">
-                <Favorite task={task}/>
-
+                <IsComplete task={task}/>
 
                 <Form
                     method="post"
@@ -151,37 +150,3 @@ export default function EditTodo() {
         </div>
     );
 }
-
-const Favorite: FunctionComponent<{ task: TaskRecord; }> = ({task}) => {
-
-    const fetcher = useFetcher();
-
-    const is_complete = task.is_complete;
-
-    return (
-        <fetcher.Form method="post" className="w-1/4">
-            <input
-                type="hidden"
-                name="id"
-                defaultValue={task.id}
-            />
-            <input
-                type="hidden"
-                name="is_complete"
-                defaultValue={task.is_complete.toString()}
-            />
-            <button
-                className="w-full"
-                aria-label={
-                    is_complete
-                        ? "Remove from favorites"
-                        : "Add to favorites"
-                }
-                name="_action"
-                value="toggle_is_complete"
-            >
-                {is_complete ? "★" : "☆"}
-            </button>
-        </fetcher.Form>
-    );
-};

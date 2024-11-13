@@ -1,11 +1,11 @@
-import {Form, NavLink, Outlet, useActionData, useFetcher, useLoaderData, useNavigation} from "@remix-run/react";
+import {Form, NavLink, Outlet, useActionData, useLoaderData, useNavigation} from "@remix-run/react";
 import {ActionFunctionArgs, json, LoaderFunctionArgs, TypedResponse} from "@remix-run/node";
 import {TaskMutation, TaskRecord, tasksRepository} from "~/models/todos.server";
 import * as React from "react";
-import {type FunctionComponent, useState} from "react";
 import {getUser, getUserId} from "~/session.server";
 import invariant from "tiny-invariant";
 import {formString} from "~/utils";
+import {IsComplete} from "~/routes/todos+/is_complete";
 
 export const loader = async (
     {request,}: LoaderFunctionArgs
@@ -54,7 +54,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
         const {id, is_complete} = values;
         const isCompleteBool = is_complete === 'true';
         const {data, error} = await tasksRepository.set(id, {
-            is_complete: !isCompleteBool
+            is_complete: isCompleteBool
         });
         console.debug({data, error});
     }
@@ -153,8 +153,6 @@ export default function Todos() {
                             id="search-spinner"
                             hidden={!searching}
                         />
-
-
                     </Form>
                     <nav className="flex w-full justify-center p-2 border-2 border-black">
                         {tasks && tasks.length ? (
@@ -162,10 +160,7 @@ export default function Todos() {
                                 {tasks.map((task) => (
                                     <li key={task.id}
                                         className="border-2 border-black w-full flex flex-row justify-between">
-                                        {/*<Favorite task={task}/>*/}
-                                        <Favorite2 task={task}/>
-
-                                        {/*<CheckboxTwo task={task}/>*/}
+                                        <IsComplete task={task}/>
 
                                         <NavLink
                                             className={
@@ -224,7 +219,7 @@ export default function Todos() {
                     </nav>
                 </div>
                 <aside className="
-                    w-52
+                    w-100
                     border-2 border-blue-900
                 ">
                     <div>Outlet</div>
@@ -234,99 +229,3 @@ export default function Todos() {
         </>
     );
 }
-
-const Favorite: FunctionComponent<{ task: TaskRecord; }> = ({task}) => {
-
-    const fetcher = useFetcher();
-
-    const is_complete = task.is_complete;
-
-    return (
-        <fetcher.Form method="post" className="w-1/4">
-            <input
-                type="hidden"
-                name="id"
-                defaultValue={task.id}
-            />
-            <input
-                type="hidden"
-                name="is_complete"
-                defaultValue={task.is_complete.toString()}
-            />
-            <button
-                className="w-full"
-                aria-label={
-                    is_complete
-                        ? "Remove from favorites"
-                        : "Add to favorites"
-                }
-                name="_action"
-                value="toggle_is_complete"
-            >
-                {is_complete ? "★" : "☆"}
-            </button>
-        </fetcher.Form>
-    );
-};
-
-const Favorite2: FunctionComponent<{ task: TaskRecord | TaskMutation; }> = ({task}) => {
-    const fetcher = useFetcher();
-    const [isChecked, setIsChecked] = useState<boolean>(task.is_complete);
-
-    invariant(task.id, "Missing todos id");
-
-    return (
-        <fetcher.Form method="post" className="flex">
-            <button
-                type="button"
-                className="flex items-center cursor-pointer select-none"
-                onClick={() => {
-                    setIsChecked(!isChecked);
-                    fetcher.submit({
-                        id: task.id.toString(),
-                        is_complete: isChecked.toString(),
-                        _action: "toggle_is_complete"
-                    }, {method: "post"});
-                }}
-                aria-label={
-                    isChecked
-                        ? "Mark as incomplete"
-                        : "Mark as complete"
-                }
-            >
-                <div className="relative">
-                    <input
-                        type="checkbox"
-                        id={task.id.toString()}
-                        className="sr-only"
-                        checked={isChecked}
-                        onChange={() => {
-                        }}
-                    />
-                    <div
-                        className={`mr-4 flex h-5 w-5 items-center justify-center rounded border ${
-                            isChecked ? "border-primary bg-gray dark:bg-transparent" : ""
-                        }`}
-                    >
-                        <span className={`opacity-0 ${isChecked ? "!opacity-100" : ""}`}>
-                            <svg
-                                width="11"
-                                height="8"
-                                viewBox="0 0 11 8"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M10.0915 0.951972L10.0867 0.946075L10.0813 0.940568C9.90076 0.753564 9.61034 0.753146 9.42927 0.939309L4.16201 6.22962L1.58507 3.63469C1.40401 3.44841 1.11351 3.44879 0.932892 3.63584C0.755703 3.81933 0.755703 4.10875 0.932892 4.29224L0.932878 4.29225L0.934851 4.29424L3.58046 6.95832C3.73676 7.11955 3.94983 7.2 4.1473 7.2C4.36196 7.2 4.55963 7.11773 4.71406 6.9584L10.0468 1.60234C10.2436 1.4199 10.2421 1.1339 10.0915 0.951972ZM4.2327 6.30081L4.2317 6.2998C4.23206 6.30015 4.23237 6.30049 4.23269 6.30082L4.2327 6.30081Z"
-                                    fill="#3056D3"
-                                    stroke="#3056D3"
-                                    strokeWidth="0.4"
-                                ></path>
-                            </svg>
-                        </span>
-                    </div>
-                </div>
-            </button>
-        </fetcher.Form>
-    );
-};

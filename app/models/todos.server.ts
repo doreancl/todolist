@@ -2,7 +2,6 @@ import {createClient} from "@supabase/supabase-js";
 import invariant from "tiny-invariant";
 
 export type TaskMutation = {
-    id?: number;
     user_id: string;
     task: string;
     is_complete: boolean;
