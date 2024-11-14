@@ -56,7 +56,6 @@ export default function App() {
             <Links/>
         </head>
         <body>
-        <p>ROOT</p>
         <div className="w-full h-full flex">
             <div className="flex flex-col">
                 <>
@@ -69,12 +68,18 @@ export default function App() {
                                 <Link to={`/todos`}>
                                     Todos
                                 </Link>
-                                <Link to={`/things`}>
-                                    Things
-                                </Link>
-                                <Link to={`/contacts`}>
-                                    Contacts
-                                </Link>
+                                {
+                                    user.email === "doreancl@gmail.com" ? (
+                                        <>
+                                            <Link to={`/things`}>
+                                                Things
+                                            </Link>
+                                            <Link to={`/contacts`}>
+                                                Contacts
+                                            </Link></>
+                                    ) : <></>
+                                }
+
                                 <h1>
                                     <Form method="post">
                                         <button

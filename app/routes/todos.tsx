@@ -105,7 +105,7 @@ export default function Todos() {
                         <h1>{user.email}</h1>
                     </div>
                     <div className="flex items-center justify-center pl-1">
-                        <h1>My Tasks</h1>
+                        {/*<h1>My Tasks</h1>*/}
                     </div>
                     <Form method="post" className="flex w-full justify-between p-2">
                         <input type="text" name="task" id="taskTitle"
