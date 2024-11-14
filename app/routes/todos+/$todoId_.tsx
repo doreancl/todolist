@@ -98,7 +98,11 @@ export default function EditTodo() {
                         type="submit"
                         name="_action"
                         value="destroy"
-                    >Delete
+                        className="
+                            flex items-center gap-2 rounded bg-primary py-2 px-4.5
+                            font-medium text-white hover:bg-opacity-90
+                        ">
+                        Delete
                     </button>
                 </Form>
             </div>
@@ -109,7 +113,7 @@ export default function EditTodo() {
                 <Form method="post" className="
             flex
             flex-col
-            w-full justify-center p-2 border-2 border-black
+            w-full justify-center p-2
             ">
                     <div className="mb-5">
                         <label htmlFor="taskTitle"

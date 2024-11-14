@@ -99,33 +99,15 @@ export default function Todos() {
 
     return (
         <>
-            <div className="
-                flex flex-row
-                w-full h-full p-5
-            ">
-                <div className="
-                    flex flex-col
-                    h-full
-                    border-2 border-green-900
-                ">
-                    <div className="
-                    h-36 flex
-                    items-center justify-center
-                    border-2 border-black
-                ">
+            <div className="flex flex-row w-full h-full p-5">
+                <div className="flex flex-col h-full">
+                    <div className="h-36 flex items-center justify-center">
                         <h1>{user.email}</h1>
                     </div>
-                    <div className="
-                    flex
-                    items-center justify-center
-                    pl-1 border-2 border-black
-                 ">
+                    <div className="flex items-center justify-center pl-1">
                         <h1>My Tasks</h1>
                     </div>
-                    <Form method="post" className="
-                    flex w-full justify-between p-2 border-2 border-black
-                    ">
-
+                    <Form method="post" className="flex w-full justify-between p-2">
                         <input type="text" name="task" id="taskTitle"
                                placeholder="Enter task title"
                                ref={taskRef}
@@ -154,12 +136,12 @@ export default function Todos() {
                             hidden={!searching}
                         />
                     </Form>
-                    <nav className="flex w-full justify-center p-2 border-2 border-black">
+                    <nav className="flex w-full justify-center p-2">
                         {tasks && tasks.length ? (
                             <ul className=" w-full">
                                 {tasks.map((task) => (
                                     <li key={task.id}
-                                        className="border-2 border-black w-full flex flex-row justify-between">
+                                        className="w-full flex flex-row justify-between">
                                         <IsComplete task={task}/>
 
                                         <NavLink
@@ -218,10 +200,7 @@ export default function Todos() {
                         )}
                     </nav>
                 </div>
-                <aside className="
-                    w-100
-                    border-2 border-blue-900
-                ">
+                <aside className="w-100">
                     <div>Outlet</div>
                     <Outlet/>
                 </aside>
