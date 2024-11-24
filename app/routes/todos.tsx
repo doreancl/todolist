@@ -111,8 +111,8 @@ export default function Todos() {
 
     return (
         <>
-            <div className="flex flex-row  h-full p-5">
-                <div className="flex flex-col h-full max-w-125">
+            <div className="flex flex-row  h-full p-5 w-full">
+                <div className="flex flex-col h-full">
                     <div className="h-36 flex items-center justify-center">
                         <h1>{user.email}</h1>
                     </div>
@@ -213,7 +213,7 @@ export default function Todos() {
                         )}
                     </nav>
                 </div>
-                <aside className="w-100">
+                <aside className="flex w-100 flex-col">
                     <div>Outlet</div>
                     <Outlet/>
                 </aside>

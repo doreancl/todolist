@@ -49,9 +49,7 @@ export default function Contacts() {
 
     const searching =
         navigation.location &&
-        new URLSearchParams(navigation.location.search).has(
-            "q"
-        );
+        new URLSearchParams(navigation.location.search).has("q");
 
     return (
         <>
@@ -144,15 +142,11 @@ export default function Contacts() {
                             ))}
                         </ul>
                     ) : (
-                        <p>
-                            <i>No contacts</i>
-                        </p>
+                        <p><i>No contacts</i></p>
                     )}
                 </nav>
             </div>
-            <div id="detail" className={
-                navigation.state === "loading" && !searching ? "loading" : "ass"
-            }>
+            <div id="detail" className={navigation.state === "loading" && !searching ? "loading" : "ass"}>
                 <Outlet/>
             </div>
         </>
