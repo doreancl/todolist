@@ -82,7 +82,7 @@ export default function EditTodo() {
             <Link
                 className=""
                 to={`/todos`}>
-                Close
+                {"<"} Back
             </Link>
 
             <div className="

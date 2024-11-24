@@ -66,7 +66,7 @@ export const action = async (
         const {data, error} = await tasksRepository.set({user_id: userId, id: todoId}, {
             completed_at: getTaskResponse.task.completed_at ? null : new Date().toISOString(),
         });
-        if(error || !error) {
+        if (error || !error) {
             return {success: false};
         }
         console.debug({data});
@@ -150,16 +150,14 @@ export default function Todos() {
                     </Form>
                     <nav className="flex  justify-center p-2">
                         {tasks && tasks.length ? (
-                            <ul className=" ">
+                            <ul className="">
                                 {tasks.map((task) => (
-                                    <li key={task.id}
-                                        className=" flex flex-row justify-between">
+                                    <li key={task.id} className=" flex flex-row gap-2">
                                         <IsComplete task={task}/>
-
                                         <NavLink
                                             className={
                                                 ({isActive, isPending}) =>
-                                                    "" + (isActive ? "bg-gray-300" : isPending ? "" : "")
+                                                    "flex-1 " + (isActive ? "bg-gray-300" : isPending ? "" : "")
                                             }
                                             to={`${task.id}`}
                                         >
@@ -171,7 +169,6 @@ export default function Todos() {
                                                 {task.task}
                                             </h3>
                                         </NavLink>
-
                                         <Form
                                             className="flex"
                                             method="post"
@@ -213,8 +210,7 @@ export default function Todos() {
                         )}
                     </nav>
                 </div>
-                <aside className="flex w-100 flex-col">
-                    <div>Outlet</div>
+                <aside className="flex w-100 flex-col mt-25">
                     <Outlet/>
                 </aside>
             </div>

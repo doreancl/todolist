@@ -26,7 +26,7 @@ export const IsComplete: React.FunctionComponent<{
         <fetcher.Form id={task.id.toString()} method="post" className="flex">
             <button
                 type="button"
-                className="flex items-center cursor-pointer select-none"
+                className="flex cursor-pointer select-none"
                 onClick={handleToggle}
                 aria-label={task.completed_at ? "Mark as incomplete" : "Mark as complete"}
             >
@@ -39,7 +39,7 @@ export const IsComplete: React.FunctionComponent<{
                         readOnly
                     />
                     <div
-                        className={`mr-4 flex h-5 w-5 items-center justify-center rounded border ${
+                        className={`flex h-5 w-5 items-center justify-center rounded border ${
                             task.completed_at ? "border-primary bg-gray dark:bg-transparent" : ""
                         }`}
                     >
