@@ -1,7 +1,11 @@
 import {createClient} from "@supabase/supabase-js";
 import invariant from "tiny-invariant";
 
-export type User = { id: string; email: string };
+export type UserMutation = { id: string; email: string };
+
+export type UserRecord = UserMutation & {
+    created_at: Date;
+};
 
 // Abstract this away
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -34,15 +38,23 @@ export async function createUser(email: string, password: string) {
     return profile;
 }
 
-export async function getProfileById(id: string) {
+export async function getProfileById(
+    id: string
+): Promise<{
+    user: UserRecord;
+    error: Error | null;
+}> {
     const {data, error} = await supabase
         .from("profiles")
-        .select("email, id")
+        .select("*")
         .eq("id", id)
         .single();
 
-    if (error) return null;
-    if (data) return {id: data.id, email: data.email};
+//    if (data) return {id: data.id, email: data.email};
+
+    return {
+        user: data as UserRecord, error
+    };
 }
 
 export async function getProfileByEmail(email?: string) {

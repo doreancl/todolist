@@ -1,6 +1,6 @@
 import {useMemo} from "react";
 import {useMatches} from "@remix-run/react";
-import type {User} from "./models/user.server";
+import type {UserMutation} from "./models/user.server";
 
 export function useMatchesData(id: string): any {
     const matchingRoutes = useMatches();
@@ -12,7 +12,7 @@ export function useMatchesData(id: string): any {
     return route?.data;
 }
 
-export function isUser(user: User) {
+export function isUser(user: UserMutation) {
     return user && typeof user === "object";
 }
 

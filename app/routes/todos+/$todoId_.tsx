@@ -8,17 +8,26 @@ import * as React from "react";
 import {IsComplete} from "~/routes/todos+/is_complete";
 
 export const loader = async (
-    {params,}: LoaderFunctionArgs
-): Promise<TypedResponse<{ task: TaskRecord }>> => {
-    invariant(params.todoId, "Missing task id");
+    {params, request,}: LoaderFunctionArgs
+): Promise<
+    TypedResponse<{ task: TaskRecord }>
+> => {
+    invariant(params.todoId, "Missing task ID");
 
-    const {data, error} = await tasksRepository.get(params.todoId);
-    if (error) {
-        console.error(error);
-        throw new Response("Not Found", {status: 404});
+    const userId = await getUserId(request);
+    const todoId = Number(params.todoId);
+
+    const {task, error} = await tasksRepository.get({
+        user_id: userId,
+        id: todoId,
+    });
+
+    if (error || !task) {
+        console.error("Error fetching task:", error);
+        throw new Response("Task not found", {status: 404});
     }
 
-    return json({task: data});
+    return json({task: task});
 };
 
 export const action = async (
@@ -30,31 +39,30 @@ export const action = async (
     const {_action, ...values} = formString(formData);
 
     values.user_id = userId;
+    const id = Number(values.id); // Convierto el id a un número
 
     console.debug("action", {_action, values}, Object.fromEntries(formData))
 
     if (_action === "update") {
-        const {id, task} = values;
-        const {data, error} = await tasksRepository.set(id, {
-            task: task
-        });
+        const {task} = values;
+        const {data, error} = await tasksRepository.set(
+            {user_id: userId, id: id},
+            {task: task}
+        );
         console.debug({data, error});
     }
 
     if (_action === "toggle_is_complete") {
-        const {id, is_complete} = values;
-        const isCompleteBool = is_complete === 'true';
-        const {data, error} = await tasksRepository.set(id, {
-            is_complete: isCompleteBool
+        const {task} = await tasksRepository.get({user_id: userId, id: id});
+        const {data} = await tasksRepository.set({user_id: userId, id: id}, {
+            completed_at: task?.completed_at ? null : new Date().toISOString(),
         });
-        console.debug("toggle_is_complete", {data, error});
+        console.debug({data});
     }
 
     if (_action === "destroy") {
-        const {id} = values;
-        const {data, error} = await tasksRepository.destroy(id);
+        const {data, error} = await tasksRepository.destroy({user_id: userId, id: id});
         console.debug({data, error});
-
         return redirect("/todos");
     }
 
@@ -125,6 +133,7 @@ export default function EditTodo() {
                             <label
                                 htmlFor="task"
                                 className="mb-3 block text-sm font-medium text-black">
+                                {""}
                             </label>
                             <textarea
                                 id="task"

@@ -5,6 +5,8 @@ export type TaskMutation = {
     user_id: string;
     task: string;
     is_complete: boolean;
+    deleted_at: string | null;
+    completed_at: string | null;
 };
 
 export type TaskRecord = TaskMutation & {
@@ -27,18 +29,34 @@ invariant(
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const tasksRepository = {
-    async getAll(userId: string): Promise<TaskRecord[]> {
+    async getAll(
+        {user_id}: Pick<TaskMutation, 'user_id'>
+    ): Promise<{
+        data: TaskRecord[] | null;
+        error: Error | null;
+    }> {
 
         const {data, error} = await supabase
             .from('todos')
             .select('*')
-            .eq('user_id', userId)
-            .order('id', {ascending: true});
+            .eq('user_id', user_id)
+            .is('deleted_at', null)
+            .order('id', {ascending: true})
+        ;
 
-        return {data, error};
+        if (error) {
+            return {data: null, error};
+        }
+
+        return {data: data as TaskRecord[], error};
     },
 
-    async create(values: TaskMutation): Promise<TaskRecord> {
+    async create(
+        values: TaskMutation
+    ): Promise<{
+        data: TaskRecord | null;
+        error: Error | null;
+    }> {
 
         console.debug("create", values)
 
@@ -48,40 +66,60 @@ export const tasksRepository = {
                 values,
             ])
             .select()
-        return {data, error};
+            .single();
+
+        return {data: data as TaskRecord, error};
     },
 
-    async set(id: string, values: Partial<TaskMutation>): Promise<TaskRecord> {
+    async set(
+        {user_id, id}: Pick<TaskRecord, 'user_id' | 'id'>,
+        values: Partial<TaskMutation>
+    ): Promise<{
+        data: TaskRecord | null;
+        error: Error | null;
+    }> {
 
         console.debug("set", id, values)
 
-        const response = await supabase
+        const {data, error} = await supabase
             .from('todos')
             .update(values)
             .eq('id', id)
-            .select();
+            .eq('user_id', user_id)
+            .select()
+            .single();
 
-        return response;
+        return {data: data as TaskRecord, error};
     },
 
-    async get(id: string): Promise<TaskRecord> {
+    async get(
+        {user_id, id}: Pick<TaskRecord, 'user_id' | 'id'>
+    ): Promise<{
+        task: TaskRecord | null;
+        error: Error | null;
+    }> {
         const {data, error} = await supabase
             .from('todos')
             .select('*')
             .eq('id', id)
+            .eq('user_id', user_id)
+            .is('deleted_at', null)
             .single()
         ;
-        return {data, error};
+        return {task: data as TaskRecord, error};
     },
 
-    async destroy(id: string): Promise<void> {
-        console.debug("destroy", {id})
+    async destroy(
+        {user_id, id}: Pick<TaskRecord, 'user_id' | 'id'>
+    ): Promise<{
+        data: TaskRecord | null; error: Error | null
+    }> {
 
-        const {data, error} = await supabase
-            .from('todos')
-            .delete()
-            .eq('id', id)
+        console.debug("destroy", {id});
 
-        return {data, error};
+        return this.set(
+            {id, user_id},
+            {deleted_at: new Date().toISOString(),}
+        )
     },
 };

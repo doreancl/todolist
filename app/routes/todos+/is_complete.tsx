@@ -1,22 +1,21 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {useFetcher} from '@remix-run/react';
 import {TaskRecord} from "~/models/todos.server";
 
-export const IsComplete: React.FunctionComponent<{ task: TaskRecord }> = (
-    {task}
-) => {
+export const IsComplete: React.FunctionComponent<{
+    task: Required<Pick<TaskRecord, 'id' | 'completed_at'>>
+}> = ({task}) => {
     const fetcher = useFetcher();
+
 
     const handleToggle = () => {
         console.log(
             "is_complete",
-            task.is_complete, task.is_complete!
+            task.completed_at, task.completed_at!
         );
         fetcher.submit(
             {
-                id: task.id.toString(),
-                is_complete: (!task.is_complete).toString(),
+                id: task.id,
                 _action: "toggle_is_complete",
             },
             {method: "post"}
@@ -29,40 +28,29 @@ export const IsComplete: React.FunctionComponent<{ task: TaskRecord }> = (
                 type="button"
                 className="flex items-center cursor-pointer select-none"
                 onClick={handleToggle}
-                aria-label={task.is_complete ? "Mark as incomplete" : "Mark as complete"}
+                aria-label={task.completed_at ? "Mark as incomplete" : "Mark as complete"}
             >
                 <div className="relative">
                     <input
                         type="checkbox"
                         id={`task_list_${task.id ?? ''}`}
                         className="sr-only"
-                        checked={task.is_complete}
+                        checked={task.completed_at ? true : false}
                         readOnly
                     />
                     <div
                         className={`mr-4 flex h-5 w-5 items-center justify-center rounded border ${
-                            task.is_complete ? "border-primary bg-gray dark:bg-transparent" : ""
+                            task.completed_at ? "border-primary bg-gray dark:bg-transparent" : ""
                         }`}
                     >
-                        {task.is_complete && (
-                            <span className="!opacity-100">
-                <CheckIcon/>
-              </span>
+                        {task.completed_at && (
+                            <span className="!opacity-100"><CheckIcon/></span>
                         )}
                     </div>
                 </div>
             </button>
         </fetcher.Form>
     );
-};
-
-IsComplete.propTypes = {
-    task: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        is_complete: PropTypes.bool.isRequired,
-        user_id: PropTypes.string,
-        task: PropTypes.string,
-    }).isRequired,
 };
 
 const CheckIcon = () => (

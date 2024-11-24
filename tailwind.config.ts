@@ -20,7 +20,7 @@ export default {
             colors: {
                 current: "currentColor",
                 transparent: "transparent",
-                white: "#FFFFFF",
+                white: "#f8f8f8",
                 black: {
                     // ...colors.black,
                     DEFAULT: "#1C2434",
@@ -28,7 +28,7 @@ export default {
                 },
                 red: {
                     ...colors.red,
-                    DEFAULT: "#FB5454",
+                    DEFAULT: "#ff391e",
                 },
                 body: "#64748B",
                 bodydark: "#AEB7C0",
