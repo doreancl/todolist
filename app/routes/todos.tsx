@@ -1,10 +1,11 @@
-import {Form, NavLink, Outlet, useActionData, useLoaderData, useNavigation} from "@remix-run/react";
+import {Form, NavLink, Outlet, useActionData, useLoaderData, useNavigation, useSubmit} from "@remix-run/react";
 import {ActionFunctionArgs, json, LoaderFunctionArgs, TypedResponse} from "@remix-run/node";
 import {TaskMutation, TaskRecord, tasksRepository} from "~/models/todos.server";
 import * as React from "react";
+import {useState} from "react";
 import {getUser, getUserId} from "~/session.server";
 import invariant from "tiny-invariant";
-import {formString} from "~/utils";
+import {CONTENT_TYPES, formString} from "~/utils";
 import {IsComplete} from "~/routes/todos+/is_complete";
 import {UserRecord} from "~/models/user.server";
 
@@ -71,6 +72,17 @@ export const action = async (
         }
         console.debug({data});
     }
+    if (_action === "task_move") {
+        const {id, order} = values;
+        const todoId = Number(id);
+        const newOrder = Number(order);
+        const {data, error} = await tasksRepository.set(
+            {user_id: userId, id: todoId},
+            {order: newOrder}
+        );
+        console.debug({data, error});
+    }
+
     if (_action === "destroy") {
         const {id} = values;
         const todoId = Number(id);
@@ -85,6 +97,10 @@ export default function Todos() {
     const navigation = useNavigation();
     const actionData = useActionData<TodosActionType>();
     const taskRef = React.useRef<HTMLInputElement>(null);
+
+    const [acceptDrop, setAcceptDrop] = useState<"none" | "top" | "bottom">("none");
+    const [movingTaskId, setMovingTaskId] = useState<number | null>();
+    const submit = useSubmit();
 
     React.useEffect(() => {
         if (actionData?.success) {
@@ -150,56 +166,124 @@ export default function Todos() {
                     </Form>
                     <nav className="flex  justify-center p-2">
                         {tasks && tasks.length ? (
-                            <ul className="">
-                                {tasks.map((task) => (
-                                    <li key={task.id} className=" flex flex-row gap-2">
-                                        <IsComplete task={task}/>
-                                        <NavLink
-                                            className={
-                                                ({isActive, isPending}) =>
-                                                    "flex-1 " + (isActive ? "bg-gray-300" : isPending ? "" : "")
+                            <ul className="grow">
+                                {tasks.map((taskItem: TaskRecord, index, taskItems: TaskRecord[]) => (
+                                    <li
+                                        key={taskItem.id}
+                                        className="cursor-grab active:cursor-grabbing flex justify-between"
+
+                                        onDragOver={(event: React.DragEvent) => {
+                                            if (
+                                                event.dataTransfer.types.includes(CONTENT_TYPES.TODO_CARD)
+                                            ) {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                                const rect = event.currentTarget.getBoundingClientRect();
+                                                const midpoint = (rect.top + rect.bottom) / 2;
+                                                setAcceptDrop(event.clientY <= midpoint ? "top" : "bottom");
+                                                setMovingTaskId(taskItem.id);
                                             }
-                                            to={`${task.id}`}
-                                        >
-                                            <h3 className="
-                                            overflow-hidden truncate flex cursor-pointer items-center
-                                            font-medium
-                                            hover:bg-red hover:text-white
-                                            ">
-                                                {task.task}
-                                            </h3>
-                                        </NavLink>
-                                        <Form
-                                            className="flex"
-                                            method="post"
-                                            onSubmit={(event) => {
-                                                const response = confirm(
-                                                    "Please confirm you want to delete this record."
+                                        }}
+                                        onDragLeave={(event: React.DragEvent) => {
+                                            setAcceptDrop("none");
+                                        }}
+                                        onDrop={(event: React.DragEvent) => {
+                                            event.stopPropagation();
+
+                                            const transfer = JSON.parse(
+                                                event.dataTransfer.getData(CONTENT_TYPES.TODO_CARD),
+                                            );
+                                            invariant(transfer.id, "missing cardId");
+                                            invariant(transfer.task, "missing title");
+
+                                            const previousOrder = taskItems[index - 1] ? taskItems[index - 1].order : 0;
+                                            const nextOrder = taskItems[index + 1] ? taskItems[index + 1].order : taskItem.order + 1;
+
+                                            const droppedOrder = acceptDrop === "top" ? previousOrder : nextOrder;
+                                            const moveOrder = (droppedOrder + taskItem.order) / 2;
+
+                                            const mutation: Partial<TaskRecord> = {
+                                                order: moveOrder,
+                                                id: transfer.id,
+                                            };
+
+                                            submit(
+                                                {...mutation, _action: "task_move"},
+                                                {
+                                                    method: "post",
+                                                    navigate: false,
+                                                    fetcherKey: `card:${taskItem.id}`,
+                                                },
+                                            )
+
+                                            setAcceptDrop("none");
+                                        }}
+                                    >
+                                        <div
+                                            draggable
+                                            className={
+                                                "w-full flex items-center space-x-4 border-t-2 border-b-2 " + " " +
+                                                (movingTaskId == taskItem.id && acceptDrop === "top"
+                                                    ? "border-t-red border-b-transparent"
+                                                    : movingTaskId == taskItem.id && acceptDrop === "bottom"
+                                                        ? "border-b-red border-t-transparent"
+                                                        : "border-t-transparent border-b-transparent")
+                                            }
+                                            onDragStart={(event) => {
+                                                event.dataTransfer.effectAllowed = "move";
+                                                const {id, task} = taskItem;
+                                                event.dataTransfer.setData(
+                                                    CONTENT_TYPES.TODO_CARD,
+                                                    JSON.stringify({id, task}),
                                                 );
-                                                if (!response) {
-                                                    event.preventDefault();
-                                                }
                                             }}
+
                                         >
-                                            <input
-                                                type="hidden"
-                                                name="id"
-                                                defaultValue={task.id}
-                                            />
-                                            <button
-                                                type="submit"
-                                                name="_action"
-                                                value="destroy"
-                                                className=""
+
+                                            <IsComplete task={taskItem}/>
+                                            <NavLink
+                                                className={
+                                                    ({isActive, isPending}) =>
+                                                        "flex-1 " + (isActive ? "bg-gray-300" : isPending ? "" : "")
+                                                }
+                                                to={`${taskItem.id}`}
                                             >
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                     viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
-                                                     className="size-6">
-                                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-                                                </svg>
-                                            </button>
-                                        </Form>
+                                                <h3 className="flex-1 overflow-hidden truncate cursor-pointer items-center font-medium hover:bg-red hover:text-white">
+                                                    {taskItem.task}
+                                                </h3>
+                                            </NavLink>
+                                            <Form
+                                                className="ml-auto"
+                                                method="post"
+                                                onSubmit={(event) => {
+                                                    const response = confirm(
+                                                        "Please confirm you want to delete this record."
+                                                    );
+                                                    if (!response) {
+                                                        event.preventDefault();
+                                                    }
+                                                }}
+                                            >
+                                                <input
+                                                    type="hidden"
+                                                    name="id"
+                                                    defaultValue={taskItem.id}
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    name="_action"
+                                                    value="destroy"
+                                                    className=""
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                         viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
+                                                         className="size-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                                                    </svg>
+                                                </button>
+                                            </Form>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>

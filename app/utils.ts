@@ -2,6 +2,10 @@ import {useMemo} from "react";
 import {useMatches} from "@remix-run/react";
 import type {UserMutation} from "./models/user.server";
 
+export const CONTENT_TYPES = {
+    TODO_CARD: "application/remix-card-todo",
+};
+
 export function useMatchesData(id: string): any {
     const matchingRoutes = useMatches();
     const route = useMemo(

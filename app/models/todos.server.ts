@@ -7,6 +7,7 @@ export type TaskMutation = {
     is_complete: boolean;
     deleted_at: string | null;
     completed_at: string | null;
+    order: number;
 };
 
 export type TaskRecord = TaskMutation & {
@@ -41,7 +42,7 @@ export const tasksRepository = {
             .select('*')
             .eq('user_id', user_id)
             .is('deleted_at', null)
-            .order('id', {ascending: true})
+            .order('order', {ascending: true})
         ;
 
         if (error) {
