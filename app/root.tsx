@@ -1,6 +1,6 @@
 import type {LinksFunction, LoaderFunctionArgs} from "@remix-run/node";
 import {json, MetaFunction, redirect} from "@remix-run/node";
-import {Form, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData} from "@remix-run/react";
+import {Form, Link, Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData} from "@remix-run/react";
 import {getUser, sessionStorage} from "./session.server";
 
 
@@ -98,6 +98,7 @@ export default function App() {
             </div>
             <Outlet/>
             <ScrollRestoration/>
+            <LiveReload />
             <Scripts/>
         </div>
         </body>
