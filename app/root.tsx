@@ -69,7 +69,7 @@ export default function App() {
                                     Todos
                                 </Link>
                                 {
-                                    user.email === "doreancl@gmail.com" ? (
+                                    user.email === "" ? (
                                         <>
                                             <Link to={`/things`}>
                                                 Things
@@ -98,7 +98,6 @@ export default function App() {
             </div>
             <Outlet/>
             <ScrollRestoration/>
-            <LiveReload />
             <Scripts/>
         </div>
         </body>

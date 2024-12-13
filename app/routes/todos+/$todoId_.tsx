@@ -140,7 +140,7 @@ export default function EditTodo() {
                                 rows={3}
                                 name="task"
                                 placeholder="Enter task description"
-                                className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter field-sizing-content"
+                                className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-hidden transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter field-sizing-content"
                                 value={taskValue}
                                 onChange={(e) => setTaskValue(e.target.value)}
                             ></textarea>

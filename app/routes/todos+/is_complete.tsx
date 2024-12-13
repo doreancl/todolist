@@ -44,7 +44,7 @@ export const IsComplete: React.FunctionComponent<{
                         }`}
                     >
                         {task.completed_at && (
-                            <span className="!opacity-100"><CheckIcon/></span>
+                            <span className="opacity-100!"><CheckIcon/></span>
                         )}
                     </div>
                 </div>

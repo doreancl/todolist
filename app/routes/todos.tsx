@@ -48,10 +48,14 @@ export const action = async (
     console.debug("action", {_action, values}, Object.fromEntries(formData))
 
     if (_action == "create_new") {
+
+        invariant(values.order, "input order required");
+
         const todolist: TaskMutation = {
             completed_at: null, deleted_at: null,
             is_complete: false, user_id: userId,
-            task: values.task
+            task: values.task,
+            order: Number(values.order),
         };
 
         const {data, error} = await tasksRepository.create(todolist);
@@ -141,11 +145,12 @@ export default function Todos() {
                                ref={taskRef}
                                className="
                                    w-3/4 rounded-sm border border-stroke bg-white px-4.5 py-3 text-black
-                                   focus:border-primary focus-visible:outline-none
+                                   focus:border-primary focus-visible:outline-hidden
                                    "
                                minLength={4}
                         />
-
+                        <input type="hidden" name="order"
+                               value={tasks.length === 0 ? 1 : tasks[tasks.length - 1].order + 1}/>
                         <button
                             type="submit"
                             name="_action"
@@ -237,9 +242,7 @@ export default function Todos() {
                                                     JSON.stringify({id, task}),
                                                 );
                                             }}
-
                                         >
-
                                             <IsComplete task={taskItem}/>
                                             <NavLink
                                                 className={

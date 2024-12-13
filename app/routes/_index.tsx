@@ -30,7 +30,7 @@ export default function Index() {
                                 {user ? (
                                     <Link
                                         to="/todos"
-                                        className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-violet-700 shadow-sm hover:bg-violet-50 sm:px-8"
+                                        className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-violet-700 shadow-xs hover:bg-violet-50 sm:px-8"
                                     >
                                         View Todos for {user.email}
                                     </Link>
@@ -39,7 +39,7 @@ export default function Index() {
                                         className="space-y-4 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5 sm:space-y-0">
                                         <Link
                                             to="/join"
-                                            className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-violet-700 shadow-sm hover:bg-violet-50 sm:px-8"
+                                            className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-violet-700 shadow-xs hover:bg-violet-50 sm:px-8"
                                         >
                                             Sign up
                                         </Link>

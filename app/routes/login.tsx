@@ -107,7 +107,7 @@ export default function Login() {
                             )}
                         </label>
                         <input
-                            className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                            className="w-full rounded-sm border border-gray-500 px-2 py-1 text-lg"
                             autoComplete="email"
                             type="email"
                             name="email"
@@ -135,7 +135,7 @@ export default function Login() {
                             type="password"
                             name="password"
                             autoComplete=""
-                            className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                            className="w-full rounded-sm border border-gray-500 px-2 py-1 text-lg"
                             aria-invalid={actionData?.errors?.password ? true : undefined}
                             aria-describedby="password-error"
                             ref={passwordRef}
@@ -143,7 +143,7 @@ export default function Login() {
                         />
                     </div>
                     <button
-                        className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+                        className="w-full rounded-sm bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
                         type="submit"
                     >
                         Log in
@@ -152,7 +152,7 @@ export default function Login() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
                             <input
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                                 id="remember"
                                 name="remember"
                                 type="checkbox"

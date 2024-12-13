@@ -115,7 +115,7 @@ export default function Join() {
                             )}
                         </label>
                         <input
-                            className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                            className="w-full rounded-sm border border-gray-500 px-2 py-1 text-lg"
                             type="email"
                             name="email"
                             id="email"
@@ -142,7 +142,7 @@ export default function Join() {
                             id="password"
                             type="password"
                             name="password"
-                            className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                            className="w-full rounded-sm border border-gray-500 px-2 py-1 text-lg"
                             autoComplete="new-password"
                             aria-invalid={actionData?.errors?.password ? true : undefined}
                             aria-describedby="password-error"
@@ -151,7 +151,7 @@ export default function Join() {
                         />
                     </div>
                     <button
-                        className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+                        className="w-full rounded-sm bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
                         type="submit"
                     >
                         Create Account
