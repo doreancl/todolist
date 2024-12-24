@@ -1,10 +1,11 @@
 import type {LinksFunction, LoaderFunctionArgs} from "@remix-run/node";
 import {json, MetaFunction, redirect} from "@remix-run/node";
-import {Form, Link, Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData} from "@remix-run/react";
+import {Form, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData} from "@remix-run/react";
 import {getUser, sessionStorage} from "./session.server";
 
+//import stylesheet from "~/tailwind.css?url";
 
-import "~/assets/styles/tailwind.css";
+import stylesheet from "~/assets/styles/tailwind.css";
 import "~/assets/fonts/satoshi.css";
 
 
@@ -14,6 +15,7 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => [
     //{rel: "stylesheet", href: appStylesHref},
+    { rel: "stylesheet", href: stylesheet },
 ];
 
 export async function loader({request}: LoaderFunctionArgs) {
@@ -68,6 +70,13 @@ export default function App() {
                                 <Link to={`/todos`}>
                                     Todos
                                 </Link>
+                                <Link to={`/digitalASD.tsx`}>
+                                    digital
+                                </Link>
+                                <Link to={`/lusionclone`}>
+                                    Lusion Clone
+                                </Link>
+
                                 {
                                     user.email === "" ? (
                                         <>

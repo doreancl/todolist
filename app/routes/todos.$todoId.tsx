@@ -5,7 +5,7 @@ import {TaskRecord, tasksRepository} from "~/models/todos.server";
 import {getUserId} from "~/session.server";
 import {formString} from "~/utils";
 import * as React from "react";
-import {IsComplete} from "~/routes/todos+/is_complete";
+import {IsComplete} from "~/components/todos/is_complete";
 
 export const loader = async (
     {params, request,}: LoaderFunctionArgs

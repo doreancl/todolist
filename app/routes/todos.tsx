@@ -6,7 +6,7 @@ import {useState} from "react";
 import {getUser, getUserId} from "~/session.server";
 import invariant from "tiny-invariant";
 import {CONTENT_TYPES, formString} from "~/utils";
-import {IsComplete} from "~/routes/todos+/is_complete";
+import {IsComplete} from "~/components/todos/is_complete";
 import {UserRecord} from "~/models/user.server";
 
 export const loader = async (
