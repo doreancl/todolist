@@ -3,19 +3,16 @@ import {json, MetaFunction, redirect} from "@remix-run/node";
 import {Form, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData} from "@remix-run/react";
 import {getUser, sessionStorage} from "./session.server";
 
-//import stylesheet from "~/tailwind.css?url";
-
-import stylesheet from "~/assets/styles/tailwind.css";
-import "~/assets/fonts/satoshi.css";
-
+import stylesheet from "~/assets/styles/tailwind.css?url";
+import stylesheetFont from "~/assets/fonts/satoshi.css?url";
 
 export const meta: MetaFunction = () => {
     return [{title: "Doreancl TODO LIST"}];
 };
 
 export const links: LinksFunction = () => [
-    //{rel: "stylesheet", href: appStylesHref},
     { rel: "stylesheet", href: stylesheet },
+    { rel: "stylesheet", href: stylesheetFont },
 ];
 
 export async function loader({request}: LoaderFunctionArgs) {
@@ -70,25 +67,6 @@ export default function App() {
                                 <Link to={`/todos`}>
                                     Todos
                                 </Link>
-                                <Link to={`/digitalASD.tsx`}>
-                                    digital
-                                </Link>
-                                <Link to={`/lusionclone`}>
-                                    Lusion Clone
-                                </Link>
-
-                                {
-                                    user.email === "" ? (
-                                        <>
-                                            <Link to={`/things`}>
-                                                Things
-                                            </Link>
-                                            <Link to={`/contacts`}>
-                                                Contacts
-                                            </Link></>
-                                    ) : <></>
-                                }
-
                                 <h1>
                                     <Form method="post">
                                         <button
