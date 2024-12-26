@@ -1,4 +1,5 @@
 import {Link} from "@remix-run/react";
+import Container from "~/components/container";
 
 const NAV_LINKS = [
     {path: "/digital", label: "Home"},
@@ -7,7 +8,7 @@ const NAV_LINKS = [
     {path: "/contact", label: "Contact"},
 ];
 
-export const ITEMS = Array.from({ length: 6 }, (_, index) => ({
+export const ITEMS = Array.from({length: 6}, (_, index) => ({
     id: index + 1,
     image: `Image ${index + 1}`,
     tags: `Tags ${index + 1}`,
@@ -16,16 +17,19 @@ export const ITEMS = Array.from({ length: 6 }, (_, index) => ({
 
 function Header() {
     return (
-        <header className="max-w-screen">
-            <div className="text-2xl font-bold">LOGO</div>
-            <div className="text-center">
-                <p className="text-sm">Some multi-line</p>
-                <p className="text-sm">text example</p>
-            </div>
-            <div className="text-sm font-medium bg-white text-black px-4 py-2 rounded cursor-pointer">
-                Let’s Talk
-            </div>
-        </header>
+        <Container>
+
+            <header className="flex flex-col lg:flex-row justify-between items-center my-5">
+                <div className="font-bold">LOGOs</div>
+                <div className="text-center">
+                    <p className="text-sm">Some multi-line</p>
+                    <p className="text-sm">text example</p>
+                </div>
+                <div className="text-sm font-medium bg-white text-black px-4 py-2 rounded cursor-pointer">
+                    Let’s Talk
+                </div>
+            </header>
+        </Container>
     );
 }
 
@@ -88,7 +92,7 @@ function Footer() {
 
 export default function Digital() {
     return (
-        <div className="">
+        <>
             <Header/>
             <Menu/>
             <VideoSection title="videito"/>
@@ -103,6 +107,6 @@ export default function Digital() {
             </VideoSection>
             <Portfolio items={ITEMS}/>
             <Footer/>
-        </div>
+        </>
     );
 }

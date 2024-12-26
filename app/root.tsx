@@ -4,7 +4,6 @@ import {Form, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderDa
 import {getUser, sessionStorage} from "./session.server";
 
 //import stylesheet from "~/tailwind.css?url";
-
 import stylesheet from "~/assets/styles/tailwind.css";
 import "~/assets/fonts/satoshi.css";
 
@@ -15,7 +14,7 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => [
     //{rel: "stylesheet", href: appStylesHref},
-    { rel: "stylesheet", href: stylesheet },
+    {rel: "stylesheet", href: stylesheet},
 ];
 
 export async function loader({request}: LoaderFunctionArgs) {
@@ -43,7 +42,7 @@ export const action = async ({request}) => {
     return true;
 };
 
-export default function App() {
+export function Layout({ children }: { children: React.ReactNode }) {
     const {user} = useLoaderData<typeof loader>();
 
     return (
@@ -58,28 +57,29 @@ export default function App() {
             <Links/>
         </head>
         <body>
-        <div className="w-full h-full flex">
+        {children}
+        <div className="">
             <div className="flex flex-col">
                 <>
                     {
                         user ? (
                             <>
-                                <Link to={`/`}>
-                                    Home
-                                </Link>
-                                <Link to={`/todos`}>
-                                    Todos
-                                </Link>
-                                <Link to={`/digitalASD.tsx`}>
-                                    digital
-                                </Link>
-                                <Link to={`/lusionclone`}>
-                                    Lusion Clone
-                                </Link>
-
                                 {
                                     user.email === "" ? (
                                         <>
+                                            <Link to={`/`}>
+                                                Home
+                                            </Link>
+                                            <Link to={`/todos`}>
+                                                Todos
+                                            </Link>
+                                            <Link to={`/digitalASD.tsx`}>
+                                                digital
+                                            </Link>
+                                            <Link to={`/lusionclone`}>
+                                                Lusion Clone
+                                            </Link>
+
                                             <Link to={`/things`}>
                                                 Things
                                             </Link>
@@ -105,11 +105,14 @@ export default function App() {
                     }
                 </>
             </div>
-            <Outlet/>
-            <ScrollRestoration/>
-            <Scripts/>
         </div>
+        <ScrollRestoration/>
+        <Scripts/>
         </body>
         </html>
     );
+}
+
+export default function App() {
+    return <Outlet />;
 }
