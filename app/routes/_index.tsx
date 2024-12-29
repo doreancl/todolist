@@ -1,5 +1,15 @@
 import {Link} from "@remix-run/react";
 import {useOptionalUser} from "~/utils";
+import {getUser} from "~/session.server";
+import {redirect} from "@remix-run/node";
+
+export const loader = async ({request}) => {
+    const user = await getUser(request);
+    if (user) {
+        return redirect("/todos");
+    }
+    return {success: true};
+};
 
 export default function Index() {
     const user = useOptionalUser();

@@ -1,5 +1,5 @@
 import {Form, NavLink, Outlet, useActionData, useLoaderData, useNavigation, useSubmit} from "@remix-run/react";
-import {ActionFunctionArgs, json, LoaderFunctionArgs, TypedResponse} from "@remix-run/node";
+import {ActionFunctionArgs, json, LoaderFunctionArgs, redirect, TypedResponse} from "@remix-run/node";
 import {TaskMutation, TaskRecord, tasksRepository} from "~/models/todos.server";
 import * as React from "react";
 import {useState} from "react";
@@ -19,6 +19,10 @@ export const loader = async (
     const url = new URL(request.url);
 
     const user = await getUser(request);
+    if (!user) {
+        return redirect("/");
+    }
+
     invariant(user?.id, "Missing user");
 
     const {data, error} = await tasksRepository.getAll({user_id: user.id});
